@@ -1,0 +1,36 @@
+# Виртуальные окружения
+venv/
+env/
+.venv/
+
+# Байт-код Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Распространение и установка
+dist/
+build/
+*.egg-info/
+*.eggs/
+
+# Тестирование и покрытие
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+
+# IDE и редакторы
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ОС-специфичные файлы
+.DS_Store
+Thumbs.db
+
+# Локальные настройки
+.env
+.env.local
+*.local
