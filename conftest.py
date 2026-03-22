@@ -1,11 +1,23 @@
+import os
 import pytest
+from dotenv import load_dotenv
 
 from pages.login_page import LoginPage
+from pages.signup_page import SignupPage
+
+
+@pytest.fixture(scope="session", autouse=True)
+def load_env():
+    load_dotenv()
 
 
 @pytest.fixture
 def login_page(page):
     return LoginPage(page)
+
+@pytest.fixture
+def signup_page(page):
+    return SignupPage(page)
 
 
 @pytest.fixture(autouse=True)
@@ -26,3 +38,11 @@ def cleanup_ads(page):
             document.querySelectorAll('.adsbygoogle').forEach(el => el.remove());
         }, 500);
     """)
+
+@pytest.fixture
+def authenticated_page(login_page):
+    login_page.open_home_page()
+    login_page.click_login_link()
+    login_page.login(os.getenv("LOGIN_EMAIL"), os.getenv("LOGIN_PASS"))
+
+    return login_page
