@@ -1,41 +1,55 @@
-name: Playwright Tests
+name: Playwright End-to-End Tests
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  # Вот эта штука добавляет кнопку "Run workflow" в интерфейсе GitHub
+  workflow_dispatch:
 
 jobs:
-  test:
-    timeout-minutes: 60
+  # СТАДИЯ 1: Подготовка окружения
+  install:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5 # обновил версию, чтобы ушли ворнинги
+        with:
+          python-version: '3.10'
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+  # СТАДИЯ 2: Запуск тестов (начнется только после успеха первой)
+  test:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install deps and Playwright
+        run: |
+          pip install -r requirements.txt
+          # Устанавливаем и pytest-html для красивого отчета
+          pip install pytest-html
+          python -m playwright install --with-deps
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Run Tests
+        env:
+          LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
+          LOGIN_PASS: ${{ secrets.LOGIN_PASS }}
+        # Добавляем создание HTML-отчета
+        run: pytest --html=report.html --self-contained-html
 
-    - name: Ensure browsers are installed
-      run: python -m playwright install --with-deps
-
-    - name: Run Playwright tests
-      # Передаем секреты из настроек GitHub в переменные окружения
-      env:
-        LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
-        LOGIN_PASS: ${{ secrets.LOGIN_PASS }}
-      run: pytest
-
-    - name: Upload reports
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - name: Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: report.html
