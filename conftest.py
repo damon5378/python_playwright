@@ -46,3 +46,4 @@ def authenticated_page(login_page):
     login_page.login(os.getenv("LOGIN_EMAIL"), os.getenv("LOGIN_PASS"))
 
     return login_page
+
