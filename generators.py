@@ -2,7 +2,7 @@ import random
 import time
 
 
-def name_random():
+def nickname_random():
     name = "abcdefghijklmnopqrstuvwxyz"
     result = random.choices(name, k=5)
     return "".join(result)
@@ -15,3 +15,10 @@ def pass_random():
     value = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*"
     result = random.choices(value, k=10)
     return "".join(result)
+
+def name_random(gender):
+    names = {
+        "Mr.": ["Ivan", "Stepan", "Yamal", "Lamine", "Cos", "Serg"],
+        "Mrs.": ["Olga", "Nat", "Julia", "Jana", "Anna", "Lera"]
+    }
+    return random.choice(names.get(gender, names["Mr."]))
