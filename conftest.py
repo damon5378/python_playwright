@@ -2,7 +2,9 @@ import os
 import pytest
 from dotenv import load_dotenv
 
+from pages.cart_page import CartPage
 from pages.login_page import LoginPage
+from pages.product_page import ProductPage
 from pages.signup_page import SignupPage
 
 
@@ -18,6 +20,14 @@ def login_page(page):
 @pytest.fixture
 def signup_page(page):
     return SignupPage(page)
+
+@pytest.fixture
+def product_page(page):
+    return ProductPage(page)
+
+@pytest.fixture
+def cart_page(page):
+    return CartPage(page)
 
 
 @pytest.fixture(autouse=True)
